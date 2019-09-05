@@ -8,11 +8,11 @@
 #include <ESP8266WebServer.h>
 
 
-#define LED1 5
+#define LED1 2
 
 // Your wifi login and password
-const char* ssid = "Not_Your_Internet";
-const char* password = "2902NE145";
+const char* ssid = "";
+const char* password = "";
 
 
 //Router login (192.168.1.1)
@@ -35,9 +35,20 @@ void setHeader() {
   http.addHeader("Connection", "keep-alive");
 }
 
+void blinkNth(int n) {
+  if (n == 0)
+    return;
+  digitalWrite(LED1, LOW); // Turns on LED (Yea I know it it says low)
+  delay(300);
+  digitalWrite(LED1, HIGH); // turn OFF
+  delay(100);
+  blinkNth(n-1);
+}
+
 
 void setup() {
   pinMode(LED1, OUTPUT); // physical indcator
+  digitalWrite(LED1, HIGH); // turn OFF
   Serial.begin(115200);         // Start the Serial communication to send messages to the computer
   delay(10);
   Serial.println('\n');
@@ -56,13 +67,12 @@ void setup() {
   Serial.println("Connection established!");  
   Serial.print("IP address:\t");
   Serial.println(WiFi.localIP()); 
+  blinkNth(2);
 
   // quick boot up test to see if it function properly..
   //getStatus();
-  //digitalWrite(LED1, LOW); // Turns on LED (Yea I know it it says low)
   //rebootRouter();
   //delay(40000);
-  //digitalWrite(LED1, HIGH); // turn OFF
   //Serial.println("Loged out");
 }
 
@@ -104,6 +114,7 @@ int getStatus () { // Get status of router
 }
 
 void rebootRouter() {
+  digitalWrite(LED1, LOW);
   if (WiFi.status() == WL_CONNECTED ) {
        Serial.println("Rebooting...");
      
@@ -123,7 +134,6 @@ void rebootRouter() {
         delay(5000);
        }
      
-     
      }else{
         Serial.println("Error in WiFi connection");   
      }
@@ -141,4 +151,5 @@ void logout() {
   }
   Serial.println("waiting...");
   http.end();
+  digitalWrite(LED1, HIGH);
 }
